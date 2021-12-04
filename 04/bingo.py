@@ -43,5 +43,3 @@ for number in numbers:
     else:
         continue
     break
-# print(numbers)
-# print(bingo_fields)
