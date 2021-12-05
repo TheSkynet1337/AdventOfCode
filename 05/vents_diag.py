@@ -10,7 +10,6 @@ def mark_coords(pair1, pair2):
                 diagram[pair1[0]+i][pair1[1]-i] += 1
             return
         if pair1[0] > pair2[0]:
-            print(pair1, pair2)
             for i in range(pair1[0]-pair2[0]):
                 diagram[pair1[0]-i][pair1[1]+i] += 1
             return
@@ -48,5 +47,4 @@ for line in lines:
         mark_coords(end, start)
 
 
-print(diagram.transpose())
 print((diagram > 1).sum())
