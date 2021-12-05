@@ -24,7 +24,6 @@ for line in lines:
     # print(split_line)
     start = list(map(int, split_line[0].split(',')))
     end = list(map(int, split_line[1].split(',')))
-    print(start, end)
     if start[0] == end[0]:
         if start[1] < end[1]:
             mark_coords(start, end)
@@ -35,5 +34,4 @@ for line in lines:
             mark_coords(start, end)
         else:
             mark_coords(end, start)
-print(diagram)
 print((diagram > 1).sum())
