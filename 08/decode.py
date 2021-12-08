@@ -48,45 +48,31 @@ codes = {
 
 
 def segment_to_int(seg):
-    for c in seg:
-        seg = seg.replace(c, str(list(positions.values()).index(c)))
-    if len(seg) == 2:
-        return 1
-    if len(seg) == 3:
-        return 7
-    if len(seg) == 4:
-        return 4
-    if len(seg) == 7:
-        return 8
-    if len(seg) == 6:
-        if not '3' in seg:
-            return 0
-        if not '2' in seg:
-            return 6
-        return 9
-    if '2' in seg and '5' in seg:
-        return 3
-    if '1' in seg:
-        return 5
-    return 2
+    return list(codes.values()).index(seg)
 
 
 def find_pos(in_line):
+    in_line = in_line
+    in_line[:] = [''.join(sorted(word)) for word in in_line]
     done = []
+    # set possible '2' and '5' using 1
     one = [word for word in in_line if len(word) == 2][0]
     codes['one'] = one
     positions['two'] = one
     positions['five'] = one
     done.append([c for c in one])
+    # set '0' using 7
     seven = [word for word in in_line if len(word) == 3][0]
     codes['seven'] = seven
     positions['zero'] = seven.replace(one[0], '').replace(one[1], '')
     done.append([c for c in seven])
+    # set possible '1' and '3' using 4
     four = [word for word in in_line if len(word) == 4][0]
     codes['four'] = four
     positions['one'] = four.replace(one[0], '').replace(one[1], '')
     positions['three'] = four.replace(one[0], '').replace(one[1], '')
     done.append([c for c in four])
+    # set possible '4' and '6' using 8
     eight = [word for word in in_line if len(word) == 7][0]
     codes['eight'] = eight
     done = [item for sub in done for item in sub]
@@ -125,9 +111,9 @@ def find_pos(in_line):
             codes['nine'] = candidate
             positions['six'] = positions['six'][0] if positions['six'][0] in candidate else positions['six'][1]
             sixes.remove(candidate)
-    codes['zero'] = sixes[0]
     positions['four'] = positions['four'].replace(positions['six'], '')
-    print(codes)
+    codes['zero'] = sixes[0]
+    # print(codes)
 
 
 notes = []
@@ -144,7 +130,7 @@ for i in inputs:
     find_pos(i[0])
     digits = ''
     for output in i[1]:
-        digits += str(segment_to_int(output))
+        digits += str(segment_to_int(''.join(sorted(output))))
     digits_list.append(int(digits))
     positions = positions.fromkeys(positions, '')
 
