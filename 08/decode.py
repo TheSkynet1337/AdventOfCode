@@ -1,0 +1,151 @@
+import numpy as np
+from collections import Counter
+digitlens = {
+    'zero': 6,
+    'one': 2,
+    'two': 5,
+    'three': 5,
+    'four': 4,
+    'five': 5,
+    'six': 6,
+    'seven': 3,
+    'eight': 7,
+    'nine':  6
+}
+
+'''
+ 0000
+1    2
+1    2
+ 3333
+4    5
+4    5
+ 6666
+'''
+
+positions = {
+    'zero': '',
+    'one': '',
+    'two': '',
+    'three': '',
+    'four': '',
+    'five': '',
+    'six': '',
+    'seven': '',
+    'eight': '',
+    'nine': ''
+}
+
+codes = {
+    'zero': '',
+    'one': '',
+    'two': '',
+    'three': '',
+    'four': '',
+    'five': '',
+    'six': '',
+}
+
+
+def segment_to_int(seg):
+    for c in seg:
+        seg = seg.replace(c, str(list(positions.values()).index(c)))
+    if len(seg) == 2:
+        return 1
+    if len(seg) == 3:
+        return 7
+    if len(seg) == 4:
+        return 4
+    if len(seg) == 7:
+        return 8
+    if len(seg) == 6:
+        if not '3' in seg:
+            return 0
+        if not '2' in seg:
+            return 6
+        return 9
+    if '2' in seg and '5' in seg:
+        return 3
+    if '1' in seg:
+        return 5
+    return 2
+
+
+def find_pos(in_line):
+    done = []
+    one = [word for word in in_line if len(word) == 2][0]
+    codes['one'] = one
+    positions['two'] = one
+    positions['five'] = one
+    done.append([c for c in one])
+    seven = [word for word in in_line if len(word) == 3][0]
+    codes['seven'] = seven
+    positions['zero'] = seven.replace(one[0], '').replace(one[1], '')
+    done.append([c for c in seven])
+    four = [word for word in in_line if len(word) == 4][0]
+    codes['four'] = four
+    positions['one'] = four.replace(one[0], '').replace(one[1], '')
+    positions['three'] = four.replace(one[0], '').replace(one[1], '')
+    done.append([c for c in four])
+    eight = [word for word in in_line if len(word) == 7][0]
+    codes['eight'] = eight
+    done = [item for sub in done for item in sub]
+    for j, c in enumerate(eight):
+        if c in done:
+            eight = eight.replace(c, '')
+    positions['four'] = eight
+    positions['six'] = eight
+    # most positions are still uncertain
+    fives = [word for word in in_line if len(word) == 5]
+    # use the fact that 3 has '2' and '5' but 5 and 2 only have either '2' or '5' each to make '1' and '3' clear
+    for candidate in fives:
+        if positions['two'][0] in candidate and positions['two'][1] in candidate:
+            codes['three'] = candidate
+            positions['three'] = positions['three'][0] if positions['three'][0] in candidate else positions['three'][1]
+            # remove 3 from candidates 2 and 5 remain
+            fives.remove(candidate)
+    positions['one'] = positions['one'].replace(positions['three'], '')
+    for candidate in fives:
+        if positions['one'] in candidate:
+            codes['five'] = candidate
+        else:
+            codes['two'] = candidate
+    sixes = [word for word in in_line if len(word) == 6]
+    for candidate in sixes:
+        # use the fact that 0 and 9 have '2' and '5' while 6 only has '2' to make them clear
+        if positions['three'] in candidate and not (positions['two'][0] in candidate and positions['two'][1] in candidate):
+            codes['six'] = candidate
+            positions['five'] = positions['five'][0] if positions['five'][0] in candidate else positions['five'][1]
+            # remove 6 from candidates 0 and 9 remain
+            sixes.remove(candidate)
+    positions['two'] = positions['two'].replace(positions['five'], '')
+    # use the fact that 9 has '3' to make '6' and '4' clear since 9 only has '6'
+    for candidate in sixes:
+        if positions['three'] in candidate:
+            codes['nine'] = candidate
+            positions['six'] = positions['six'][0] if positions['six'][0] in candidate else positions['six'][1]
+            sixes.remove(candidate)
+    codes['zero'] = sixes[0]
+    positions['four'] = positions['four'].replace(positions['six'], '')
+    print(codes)
+
+
+notes = []
+with open('input.txt', 'r') as in_file:
+    notes = in_file.read().splitlines()
+
+inputs = [note.split(' | ') for note in notes]
+# print(inputs)
+digits_list = []
+for i in inputs:
+    temp_in = i[0].split(' ')
+    temp_out = i[1].split(' ')
+    i = [temp_in, temp_out]
+    find_pos(i[0])
+    digits = ''
+    for output in i[1]:
+        digits += str(segment_to_int(output))
+    digits_list.append(int(digits))
+    positions = positions.fromkeys(positions, '')
+
+print(sum(digits_list))
