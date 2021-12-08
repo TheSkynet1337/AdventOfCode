@@ -1,18 +1,3 @@
-import numpy as np
-from collections import Counter
-digitlens = {
-    'zero': 6,
-    'one': 2,
-    'two': 5,
-    'three': 5,
-    'four': 4,
-    'five': 5,
-    'six': 6,
-    'seven': 3,
-    'eight': 7,
-    'nine':  6
-}
-
 '''
  0000
 1    2
@@ -23,28 +8,9 @@ digitlens = {
  6666
 '''
 
-positions = {
-    'zero': '',
-    'one': '',
-    'two': '',
-    'three': '',
-    'four': '',
-    'five': '',
-    'six': '',
-    'seven': '',
-    'eight': '',
-    'nine': ''
-}
+positions = {}
 
-codes = {
-    'zero': '',
-    'one': '',
-    'two': '',
-    'three': '',
-    'four': '',
-    'five': '',
-    'six': '',
-}
+codes = {}
 
 
 def segment_to_int(seg):
@@ -110,6 +76,7 @@ def find_pos(in_line):
         if positions['three'] in candidate:
             codes['nine'] = candidate
             positions['six'] = positions['six'][0] if positions['six'][0] in candidate else positions['six'][1]
+            # remove 9 from candidates 0 remains
             sixes.remove(candidate)
     positions['four'] = positions['four'].replace(positions['six'], '')
     codes['zero'] = sixes[0]
