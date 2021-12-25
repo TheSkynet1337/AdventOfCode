@@ -82,6 +82,7 @@ def part2(data):
             print(f'synched: {i+1}')
             print(octos)
             break
+        octos[octos > 9] = 0
     return
 
 
