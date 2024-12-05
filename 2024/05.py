@@ -73,17 +73,15 @@ def fix_line(line: list[str], rule, num):
     line[numidx] = rule
     check = check_line(line, rules)
     if check[0]:
-        fixxed_lines.append(line)
-        # return line
+        return line
     else:
-        fix_line(line, check[1], check[2])
+        return fix_line(line, check[1], check[2])
 
 
 fixxed_lines = []
 for line in bad_lines:
     check = check_line(line, rules)
-    # fixxed_lines.append(fix_line(line, check[1], check[2]))
-    fix_line(line, check[1], check[2])
+    fixxed_lines.append(fix_line(line, check[1], check[2]))
 
 print("Part 1:", sum([int(line[int(len(line) / 2)]) for line in good_lines]))
 print("Part 2:", sum([int(line[int(len(line) / 2)]) for line in fixxed_lines]))
